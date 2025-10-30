@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+
+    <header >
+
+        <h2>Health Dashboard <span id="todaydate">26/10/2025</span></h2>
+
+
+    </header>
+
+
+<section class="display">
+
+
+    <!--BMI-->
+    <article class="card card-water">
+
+      <div class="container">
+        <div class="box">
+           <h1 id="H1">BMI Calculator</h1>
+           <div class="content">
+                         <div class="input">
+                 <label for="height">Age</label>
+                 <input type="text" id="age" autocomplete="off" required />
+             </div>
+
+             
+            
+             <div class="containerHW">
+              <div class="inputH">
+
+                <label for="height">Height (cm):</label>
+                <input type="number" id="height" required placeholder="Enter height in cm">
+              </div>
+                 <div class="inputW">
+                    <label for="weight">Weight (kg):</label>
+                    <input type="number" id="weight" required placeholder="Enter weight in kg">
+                </div>
+             </div>
+             <button class="Calculate" id="submit" onclick="calculateBMI()">Calculate BMI</button>
+             <div id="result">
+              <p></p>
+              <div id="result"></div>
+              <p class="comment"></p>
+             </div>
+         </div>
+          </div>
+           </div>
+    </article>
+
+    <!--Water Intake -->
+    <article class="card card-water">
+      <div>
+      
+          <h1 id="H1">Water Intake</h1>
+      
+          <label>Daily goal (ml) </label>
+           <input id="goal" type="number" value="2000" />
+           <label for="goal">Glass Size (ml):</label>
+        <input id="glass" type="number" value="250" />
+       <button type="button" onclick="addWater()" class="outline">+1 glass</button>
+        <button type="button" onclick="removeWater()" class="outline">-1 glass</button>
+      
+        <h3>খাওয়া হয়েছে: <span id="drank">0</span> ml</h3>
+        <h3>বাকি আছে: <span id="remain">2000</span> ml</h3>
+           
+      </div>
+    </article>
+
+
+  <!-- Steps Progress Card -->
+  <article class="card card-steps">
+    <h2 id="H1">Steps Today</h2>
+
+    <!-- Goal Input -->
+    <label for="stepGoal">Goal (steps):</label>
+    <input id="stepGoal" type="number" placeholder="Enter today's goal" />
+
+    <!-- Current Steps Input -->
+    <label for="currentSteps">Current Steps:</label>
+    <input id="currentSteps" type="number" placeholder="Enter steps walked so far" />
+
+    <!-- Progress Bar -->
+    <div class="progress" style="width: 100%; background: #eee; border-radius: 5px; overflow: hidden;">
+      <div class="progress-fill" 
+           id="stepsProgressFill">
+        <span id="stepsProgressText">0%</span>
+      </div>
+    </div>
+
+    <!-- Optional Tip -->
+    <p>💡 Tip: Regular walking keeps your body and mind healthy!</p>
+  </article>
+
+  <!--Reminder Card-->
+
+
+  <article class="card card-reminder">
+<h2 id="H1">Daily Reminder</h2>
+<label for="reminderTitle">Reminder Title:</label>
+    <input id="reminderTitle" type="text" placeholder="Enter reminder title" />
+
+    <!-- Reminder Time -->
+    <label for="reminderTime">Time:</label>
+    <input id="reminderTime" type="time" /><br><br>
+
+    <!-- Reminder Note -->
+    <label for="reminderNote">Note:</label>
+    <textarea id="reminderNote" placeholder="Write a short note..."></textarea>
+
+    <!-- Buttons -->
+    <button type="button" onclick="saveReminder()">Save Reminder</button>
+    <button type="button" onclick="clearReminder()">Clear</button>
+
+    <!-- Optional Tip -->
+    <p>💡 Tip: Set small reminders to stay organized every day!</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+
+
+</article>
+
+<!--Footer-->
+
+ 
+  <!-- Footer Section -->
+  <footer>
+  <p>&copy; 2025 MyWebsite. All Rights Reserved.</p>
+  <p>
+    <a href="#"><i class="fa-solid fa-circle-info"></i>About</a> |
+    <a href="#"><i class="fa-solid fa-envelope"></i>Contact</a> |
+    <a href="#"><i class="fa-solid fa-lock"></i>Privacy Policy</a>
+  </p>
+  <p>
+    Follow us:
+    <a href="#"><i class="fa-brands fa-facebook"></i>Facebook</a> |
+    <a href="#"><i class="fa-brands fa-instagram"></i>Instagram</a> |
+    <a href="#"><i class="fa-brands fa-twitter"></i>Twitter</a>
+  </p>
+</footer>
+
+<!-- Add this in <head> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</section>
+
+
+
+
+    <script src="./app.js"></script>
+</body>
+</html>
