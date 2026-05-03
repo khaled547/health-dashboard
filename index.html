@@ -1,159 +1,1694 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Dashboard</title>
-    <link rel="stylesheet" href="./style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0D1117" id="metaThemeColor" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="HealthDash Pro" />
+    <meta
+      name="description"
+      content="Modern Health & Wellness Tracking Platform - Track water, steps, calories, sleep, mood & habits"
+    />
+    <meta
+      name="keywords"
+      content="health tracker, fitness app, wellness dashboard, calorie counter"
+    />
 
-    <header >
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
 
-        <h2>Health Dashboard <span id="todaydate">26/10/2025</span></h2>
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='32' y2='32'><stop offset='0%' stop-color='%2300D4AA'/><stop offset='100%' stop-color='%2300A3FF'/></linearGradient></defs><rect x='13' y='2' width='6' height='28' rx='3' fill='url(%23g)'/><rect x='2' y='13' width='28' height='6' rx='3' fill='url(%23g)'/></svg>"
+    />
 
+    <title>HealthDash Pro - Your Personal Wellness Platform</title>
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+      <div class="loading-animation">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring pulse-ring-delay"></div>
+        <svg class="loading-logo" width="60" height="60" viewBox="0 0 32 32">
+          <defs>
+            <linearGradient id="loadingGrad" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0%" stop-color="#00D4AA" />
+              <stop offset="100%" stop-color="#00A3FF" />
+            </linearGradient>
+          </defs>
+          <rect
+            x="13"
+            y="2"
+            width="6"
+            height="28"
+            rx="3"
+            fill="url(#loadingGrad)"
+          />
+          <rect
+            x="2"
+            y="13"
+            width="28"
+            height="6"
+            rx="3"
+            fill="url(#loadingGrad)"
+          />
+        </svg>
+      </div>
+      <p class="loading-text">Loading HealthDash Pro...</p>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <div class="brand" onclick="location.reload()">
+          <svg
+            class="brand-logo"
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            fill="none"
+          >
+            <defs>
+              <linearGradient
+                id="logoGrad"
+                x1="0"
+                y1="0"
+                x2="32"
+                y2="32"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop offset="0%" stop-color="#00D4AA" />
+                <stop offset="100%" stop-color="#00A3FF" />
+              </linearGradient>
+            </defs>
+            <rect
+              x="13"
+              y="2"
+              width="6"
+              height="28"
+              rx="3"
+              fill="url(#logoGrad)"
+            />
+            <rect
+              x="2"
+              y="13"
+              width="28"
+              height="6"
+              rx="3"
+              fill="url(#logoGrad)"
+            />
+          </svg>
+          <div class="brand-text">
+            <span class="brand-name">HealthDash</span>
+            <span class="brand-pro">PRO</span>
+          </div>
+        </div>
+
+        <!-- Vital Chips (Hidden on mobile) -->
+        <div class="vital-chips">
+          <div class="vital-chip" data-tooltip="Heart Rate">
+            <span class="pulse-dot"></span>
+            <span class="vital-label">HR</span>
+            <span class="vital-value" id="hrValue">72</span>
+            <span class="vital-unit">bpm</span>
+          </div>
+          <div class="vital-chip" data-tooltip="Blood Oxygen">
+            <span class="pulse-dot pulse-blue"></span>
+            <span class="vital-label">SpO₂</span>
+            <span class="vital-value" id="spo2Value">98</span>
+            <span class="vital-unit">%</span>
+          </div>
+          <div class="vital-chip" data-tooltip="Calories Burned">
+            <span class="vital-label">Cal</span>
+            <span class="vital-value" id="calBurned">340</span>
+            <span class="vital-unit">kcal</span>
+          </div>
+        </div>
+
+        <!-- Header Right -->
+        <div class="header-right">
+          <div class="clock-block">
+            <div class="clock" id="clock">--:--:--</div>
+            <div class="date" id="dateDisplay">---</div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="header-actions">
+            <button
+              class="header-btn"
+              id="notificationBtn"
+              aria-label="Notifications"
+              data-tooltip="Notifications"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              <span
+                class="notification-badge"
+                id="notificationBadge"
+                style="display: none"
+                >0</span
+              >
+            </button>
+
+            <button
+              class="header-btn"
+              id="settingsBtn"
+              aria-label="Settings"
+              data-tooltip="Settings"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M12 1v6m0 6v6m8.66-10.5l-5.2 3m-3.46 2l-5.2 3m13.86 0l-5.2-3m-3.46-2l-5.2-3"
+                />
+              </svg>
+            </button>
+
+            <button
+              class="theme-toggle"
+              id="themeToggle"
+              aria-label="Toggle theme"
+              data-tooltip="Theme"
+            >
+              <span class="theme-icon theme-icon-dark">🌙</span>
+              <span class="theme-icon theme-icon-light">☀️</span>
+              <span class="theme-icon theme-icon-auto">🌓</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="goal-bar-wrap">
+        <div class="goal-bar-label">
+          <span>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            Daily Progress
+          </span>
+          <span id="goalPercent" class="goal-percent-value">0%</span>
+        </div>
+        <div class="goal-bar-track">
+          <div class="goal-bar-fill" id="goalBarFill"></div>
+          <div class="goal-bar-glow"></div>
+        </div>
+      </div>
     </header>
 
-
-<section class="display">
-
-
-    <!--BMI-->
-    <article class="card card-water">
-
-      <div class="container">
-        <div class="box">
-           <h1 id="H1">BMI Calculator</h1>
-           <div class="content">
-                         <div class="input">
-                 <label for="height">Age</label>
-                 <input type="text" id="age" autocomplete="off" required />
-             </div>
-
-             
-            
-             <div class="containerHW">
-              <div class="inputH">
-
-                <label for="height">Height (cm):</label>
-                <input type="number" id="height" required placeholder="Enter height in cm">
-              </div>
-                 <div class="inputW">
-                    <label for="weight">Weight (kg):</label>
-                    <input type="number" id="weight" required placeholder="Enter weight in kg">
-                </div>
-             </div>
-             <button class="Calculate" id="submit" onclick="calculateBMI()">Calculate BMI</button>
-             <div id="result">
-              <p></p>
-              <div id="result"></div>
-              <p class="comment"></p>
-             </div>
-         </div>
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content" id="mainContent">
+      <!-- ══════════════════════════════════════════ -->
+      <!-- TAB: Dashboard -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="tab-section active" id="tab-dashboard">
+        <div class="section-header">
+          <h1 class="section-title">Dashboard Overview</h1>
+          <div class="section-actions">
+            <button class="hd-btn hd-btn-ghost" onclick="exportData()">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export Data
+            </button>
           </div>
-           </div>
-    </article>
+        </div>
 
-    <!--Water Intake -->
-    <article class="card card-water">
-      <div>
-      
-          <h1 id="H1">Water Intake</h1>
-      
-          <label>Daily goal (ml) </label>
-           <input id="goal" type="number" value="2000" />
-           <label for="goal">Glass Size (ml):</label>
-        <input id="glass" type="number" value="250" />
-       <button type="button" onclick="addWater()" class="outline">+1 glass</button>
-        <button type="button" onclick="removeWater()" class="outline">-1 glass</button>
-      
-        <h3>খাওয়া হয়েছে: <span id="drank">0</span> ml</h3>
-        <h3>বাকি আছে: <span id="remain">2000</span> ml</h3>
-           
+        <div class="dashboard-grid">
+          <!-- Quick Stats Row -->
+          <div class="quick-stats-row">
+            <div class="stat-card stat-card-water">
+              <div class="stat-icon">💧</div>
+              <div class="stat-content">
+                <div class="stat-value" id="quickWater">0ml</div>
+                <div class="stat-label">Water Today</div>
+              </div>
+              <div class="stat-trend stat-trend-up">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                >
+                  <polyline points="18 15 12 9 6 15" />
+                </svg>
+                12%
+              </div>
+            </div>
+
+            <div class="stat-card stat-card-steps">
+              <div class="stat-icon">👟</div>
+              <div class="stat-content">
+                <div class="stat-value" id="quickSteps">0</div>
+                <div class="stat-label">Steps Today</div>
+              </div>
+              <div class="stat-trend stat-trend-up">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                >
+                  <polyline points="18 15 12 9 6 15" />
+                </svg>
+                8%
+              </div>
+            </div>
+
+            <div class="stat-card stat-card-calories">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-content">
+                <div class="stat-value" id="quickCalories">0</div>
+                <div class="stat-label">Calories Burned</div>
+              </div>
+              <div class="stat-trend stat-trend-up">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                >
+                  <polyline points="18 15 12 9 6 15" />
+                </svg>
+                5%
+              </div>
+            </div>
+
+            <div class="stat-card stat-card-streak">
+              <div class="stat-icon">🏆</div>
+              <div class="stat-content">
+                <div class="stat-value" id="quickStreak">0</div>
+                <div class="stat-label">Day Streak</div>
+              </div>
+              <div class="stat-badge">New!</div>
+            </div>
+          </div>
+
+          <!-- Water Intake Card -->
+          <article class="card card-water">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">💧</span>
+                <h2 class="card-title">Water Intake</h2>
+              </div>
+              <button
+                class="card-menu-btn"
+                onclick="toggleCardMenu(this)"
+                aria-label="Options"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="card-body">
+              <div class="ring-wrap">
+                <svg
+                  class="progress-ring"
+                  viewBox="0 0 180 180"
+                  width="180"
+                  height="180"
+                >
+                  <defs>
+                    <linearGradient
+                      id="waterGradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="100%"
+                    >
+                      <stop offset="0%" stop-color="#00D4AA" />
+                      <stop offset="100%" stop-color="#00A3FF" />
+                    </linearGradient>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                      <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <circle class="ring-track" cx="90" cy="90" r="70" />
+                  <circle
+                    class="ring-fill ring-fill-water"
+                    id="waterRing"
+                    cx="90"
+                    cy="90"
+                    r="70"
+                    stroke="url(#waterGradient)"
+                    stroke-dasharray="439.82"
+                    stroke-dashoffset="439.82"
+                    transform="rotate(-90 90 90)"
+                    filter="url(#glow)"
+                  />
+                </svg>
+                <div class="ring-center">
+                  <div class="ring-value" id="waterConsumed">0</div>
+                  <div class="ring-unit">ml</div>
+                  <div class="ring-progress" id="waterPercent">0%</div>
+                </div>
+              </div>
+
+              <div class="water-goal-text">
+                Daily Goal: <span id="waterGoalDisplay">2000</span> ml
+                <button
+                  class="edit-goal-btn"
+                  onclick="editWaterGoal()"
+                  aria-label="Edit goal"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                    />
+                    <path
+                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="glass-selector">
+                <button
+                  class="glass-btn active"
+                  data-size="150"
+                  onclick="setGlassSize(150, this)"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M6 2l1 10c.1 2.2 1.5 4 3.5 4h3c2 0 3.4-1.8 3.5-4l1-10"
+                    />
+                  </svg>
+                  150ml
+                </button>
+                <button
+                  class="glass-btn"
+                  data-size="250"
+                  onclick="setGlassSize(250, this)"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M6 2l1 12c.1 2.5 1.8 4 4 4s3.9-1.5 4-4l1-12" />
+                  </svg>
+                  250ml
+                </button>
+                <button
+                  class="glass-btn"
+                  data-size="350"
+                  onclick="setGlassSize(350, this)"
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M5 2l1.5 14c.1 3 2 5 4.5 5s4.4-2 4.5-5L17 2" />
+                  </svg>
+                  350ml
+                </button>
+              </div>
+
+              <div class="water-actions">
+                <button
+                  class="hd-btn hd-btn-primary hd-btn-icon"
+                  onclick="addWater(1)"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  Add Glass
+                </button>
+                <button
+                  class="hd-btn hd-btn-secondary hd-btn-icon"
+                  onclick="addWater(-1)"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  Remove
+                </button>
+              </div>
+
+              <div class="water-remaining" id="waterRemaining">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
+                </svg>
+                2000 ml remaining
+              </div>
+
+              <div class="water-history" id="waterHistory">
+                <div class="history-header">Today's Log</div>
+                <div class="history-list" id="waterHistoryList">
+                  <div class="history-empty">
+                    No entries yet. Start tracking!
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Steps Tracker Card -->
+          <article class="card card-steps">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">👟</span>
+                <h2 class="card-title">Steps Tracker</h2>
+              </div>
+              <button
+                class="card-menu-btn"
+                onclick="toggleCardMenu(this)"
+                aria-label="Options"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="card-body">
+              <div class="input-row">
+                <div class="input-group">
+                  <label class="input-label">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                    Daily Goal
+                  </label>
+                  <input
+                    class="hd-input"
+                    type="number"
+                    id="stepsGoal"
+                    placeholder="10000"
+                    value="10000"
+                  />
+                </div>
+                <div class="input-group">
+                  <label class="input-label">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                    </svg>
+                    Current Steps
+                  </label>
+                  <input
+                    class="hd-input"
+                    type="number"
+                    id="stepsCurrent"
+                    placeholder="0"
+                    oninput="updateStepsFromInput()"
+                  />
+                </div>
+              </div>
+
+              <div class="steps-progress-wrap">
+                <div class="steps-bar-track">
+                  <div class="steps-bar-fill" id="stepsBarFill"></div>
+                  <div class="steps-bar-marker" style="left: 50%">
+                    <span class="marker-label">50%</span>
+                  </div>
+                  <div class="steps-bar-marker" style="left: 100%">
+                    <span class="marker-label">Goal</span>
+                  </div>
+                </div>
+                <div class="steps-percent" id="stepsPercent">0%</div>
+              </div>
+
+              <div class="steps-stats">
+                <div class="stat-item">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <polyline points="17 11 19 13 23 9" />
+                  </svg>
+                  <div class="stat-info">
+                    <span class="stat-val" id="statSteps">0</span>
+                    <span class="stat-lbl">Steps</span>
+                  </div>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="stat-item">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                  </svg>
+                  <div class="stat-info">
+                    <span class="stat-val" id="statDist">0.00</span>
+                    <span class="stat-lbl">km</span>
+                  </div>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="stat-item">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"
+                    />
+                  </svg>
+                  <div class="stat-info">
+                    <span class="stat-val" id="statCal">0</span>
+                    <span class="stat-lbl">kcal</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="steps-tip" id="stepsTip">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Start walking to hit your goal! 🚶
+              </div>
+            </div>
+          </article>
+
+          <!-- BMI Calculator Card -->
+          <article class="card card-bmi">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">⚖️</span>
+                <h2 class="card-title">BMI Calculator</h2>
+              </div>
+              <button
+                class="card-menu-btn"
+                onclick="toggleCardMenu(this)"
+                aria-label="Options"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="card-body">
+              <div class="input-row">
+                <div class="input-group">
+                  <label class="input-label">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M12 2v20" />
+                      <path d="M8 6h8" />
+                      <path d="M6 12h12" />
+                      <path d="M8 18h8" />
+                    </svg>
+                    Height (cm)
+                  </label>
+                  <input
+                    class="hd-input"
+                    type="number"
+                    id="bmiHeight"
+                    placeholder="170"
+                    min="50"
+                    max="250"
+                  />
+                </div>
+                <div class="input-group">
+                  <label class="input-label">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path d="M12 2a7 7 0 1 0 0 14 7 7 0 1 0 0-14z" />
+                      <path d="M12 16v6" />
+                      <path d="M9 22h6" />
+                    </svg>
+                    Weight (kg)
+                  </label>
+                  <input
+                    class="hd-input"
+                    type="number"
+                    id="bmiWeight"
+                    placeholder="70"
+                    min="20"
+                    max="300"
+                  />
+                </div>
+              </div>
+
+              <button
+                class="hd-btn hd-btn-primary hd-btn-block hd-btn-icon"
+                onclick="calculateBMIAction()"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Calculate BMI
+              </button>
+
+              <div class="bmi-result" id="bmiResult">
+                <div class="bmi-result-inner">
+                  <div class="bmi-number" id="bmiNumber">--</div>
+                  <div class="bmi-badge" id="bmiBadge">
+                    Calculate to see result
+                  </div>
+                </div>
+                <div class="bmi-advice" id="bmiAdvice"></div>
+              </div>
+
+              <div class="bmi-category-bar">
+                <div class="bmi-seg bmi-seg-under" data-tooltip="BMI < 18.5">
+                  <span>Underweight</span>
+                </div>
+                <div
+                  class="bmi-seg bmi-seg-normal"
+                  data-tooltip="BMI 18.5 - 24.9"
+                >
+                  <span>Normal</span>
+                </div>
+                <div class="bmi-seg bmi-seg-over" data-tooltip="BMI 25 - 29.9">
+                  <span>Overweight</span>
+                </div>
+                <div class="bmi-seg bmi-seg-obese" data-tooltip="BMI ≥ 30">
+                  <span>Obese</span>
+                </div>
+              </div>
+
+              <div class="bmi-history" id="bmiHistory">
+                <div class="history-header">BMI History</div>
+                <canvas id="bmiChart" height="120"></canvas>
+              </div>
+            </div>
+          </article>
+
+          <!-- Meal Tracker Card (NEW) -->
+          <article class="card card-meals">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">🍽️</span>
+                <h2 class="card-title">Meal Tracker</h2>
+              </div>
+              <button
+                class="card-menu-btn"
+                onclick="toggleCardMenu(this)"
+                aria-label="Options"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="card-body">
+              <div class="calorie-rings">
+                <div class="calorie-ring-item">
+                  <div class="mini-ring">
+                    <svg viewBox="0 0 100 100" width="80" height="80">
+                      <circle class="mini-ring-track" cx="50" cy="50" r="40" />
+                      <circle
+                        class="mini-ring-fill mini-ring-protein"
+                        id="proteinRing"
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        stroke-dasharray="251.2"
+                        stroke-dashoffset="251.2"
+                        transform="rotate(-90 50 50)"
+                      />
+                    </svg>
+                    <div class="mini-ring-center">
+                      <span class="mini-ring-value" id="proteinValue">0</span>
+                      <span class="mini-ring-unit">g</span>
+                    </div>
+                  </div>
+                  <div class="mini-ring-label">Protein</div>
+                </div>
+
+                <div class="calorie-ring-item">
+                  <div class="mini-ring">
+                    <svg viewBox="0 0 100 100" width="80" height="80">
+                      <circle class="mini-ring-track" cx="50" cy="50" r="40" />
+                      <circle
+                        class="mini-ring-fill mini-ring-carbs"
+                        id="carbsRing"
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        stroke-dasharray="251.2"
+                        stroke-dashoffset="251.2"
+                        transform="rotate(-90 50 50)"
+                      />
+                    </svg>
+                    <div class="mini-ring-center">
+                      <span class="mini-ring-value" id="carbsValue">0</span>
+                      <span class="mini-ring-unit">g</span>
+                    </div>
+                  </div>
+                  <div class="mini-ring-label">Carbs</div>
+                </div>
+
+                <div class="calorie-ring-item">
+                  <div class="mini-ring">
+                    <svg viewBox="0 0 100 100" width="80" height="80">
+                      <circle class="mini-ring-track" cx="50" cy="50" r="40" />
+                      <circle
+                        class="mini-ring-fill mini-ring-fat"
+                        id="fatRing"
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        stroke-dasharray="251.2"
+                        stroke-dashoffset="251.2"
+                        transform="rotate(-90 50 50)"
+                      />
+                    </svg>
+                    <div class="mini-ring-center">
+                      <span class="mini-ring-value" id="fatValue">0</span>
+                      <span class="mini-ring-unit">g</span>
+                    </div>
+                  </div>
+                  <div class="mini-ring-label">Fat</div>
+                </div>
+              </div>
+
+              <div class="meal-input-section">
+                <div class="input-group">
+                  <label class="input-label">Meal Name</label>
+                  <input
+                    class="hd-input"
+                    type="text"
+                    id="mealName"
+                    placeholder="e.g., Breakfast"
+                  />
+                </div>
+                <div class="input-row">
+                  <div class="input-group">
+                    <label class="input-label">Calories</label>
+                    <input
+                      class="hd-input"
+                      type="number"
+                      id="mealCal"
+                      placeholder="300"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <label class="input-label">Time</label>
+                    <input class="hd-input" type="time" id="mealTime" />
+                  </div>
+                </div>
+                <button
+                  class="hd-btn hd-btn-primary hd-btn-block hd-btn-icon"
+                  onclick="addMeal()"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                  Log Meal
+                </button>
+              </div>
+
+              <div class="meal-list" id="mealList">
+                <div class="history-header">Today's Meals</div>
+                <div class="meals-empty">No meals logged yet</div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Weekly Chart Card -->
+          <article class="card card-chart card-chart-wide">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">📊</span>
+                <h2 class="card-title">Weekly Analytics</h2>
+              </div>
+              <div class="chart-tabs">
+                <button
+                  class="chart-tab active"
+                  onclick="switchChart('water', this)"
+                >
+                  💧 Water
+                </button>
+                <button class="chart-tab" onclick="switchChart('steps', this)">
+                  👟 Steps
+                </button>
+                <button
+                  class="chart-tab"
+                  onclick="switchChart('calories', this)"
+                >
+                  🔥 Calories
+                </button>
+                <button class="chart-tab" onclick="switchChart('weight', this)">
+                  ⚖️ Weight
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="weeklyChart" height="200"></canvas>
+            </div>
+          </article>
+
+          <!-- Daily Reminder Card -->
+          <article class="card card-reminder">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">🔔</span>
+                <h2 class="card-title">Health Reminders</h2>
+              </div>
+              <button
+                class="card-menu-btn"
+                onclick="toggleCardMenu(this)"
+                aria-label="Options"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="12" cy="5" r="1" />
+                  <circle cx="12" cy="19" r="1" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="card-body">
+              <div class="input-group">
+                <label class="input-label">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                    />
+                    <path
+                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                    />
+                  </svg>
+                  Reminder Title
+                </label>
+                <input
+                  class="hd-input"
+                  type="text"
+                  id="remTitle"
+                  placeholder="e.g., Take vitamins"
+                />
+              </div>
+
+              <div class="input-row">
+                <div class="input-group">
+                  <label class="input-label">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Time
+                  </label>
+                  <input class="hd-input" type="time" id="remTime" />
+                </div>
+                <div class="input-group">
+                  <label class="input-label">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                      />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    Note (optional)
+                  </label>
+                  <input
+                    class="hd-input"
+                    type="text"
+                    id="remNote"
+                    placeholder="Additional details..."
+                  />
+                </div>
+              </div>
+
+              <div class="reminder-actions">
+                <button
+                  class="hd-btn hd-btn-primary hd-btn-icon"
+                  onclick="saveReminder()"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Save Reminder
+                </button>
+                <button
+                  class="hd-btn hd-btn-secondary"
+                  onclick="clearReminderForm()"
+                >
+                  Clear
+                </button>
+              </div>
+
+              <div class="reminder-list" id="reminderList">
+                <div class="history-header">Active Reminders</div>
+                <div class="reminders-empty">No reminders set</div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Achievement Badges (NEW) -->
+          <article class="card card-achievements">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">🏆</span>
+                <h2 class="card-title">Achievements</h2>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="achievements-grid" id="achievementsGrid">
+                <div class="achievement-badge achievement-locked">
+                  <div class="achievement-icon">💧</div>
+                  <div class="achievement-name">Hydration Hero</div>
+                  <div class="achievement-desc">Drink 2L for 7 days</div>
+                  <div class="achievement-progress">3/7 days</div>
+                </div>
+
+                <div class="achievement-badge achievement-locked">
+                  <div class="achievement-icon">👟</div>
+                  <div class="achievement-name">Step Master</div>
+                  <div class="achievement-desc">10K steps for 30 days</div>
+                  <div class="achievement-progress">0/30 days</div>
+                </div>
+
+                <div class="achievement-badge achievement-locked">
+                  <div class="achievement-icon">🔥</div>
+                  <div class="achievement-name">Streak King</div>
+                  <div class="achievement-desc">7 day streak</div>
+                  <div class="achievement-progress">0/7 days</div>
+                </div>
+
+                <div class="achievement-badge achievement-locked">
+                  <div class="achievement-icon">⚖️</div>
+                  <div class="achievement-name">BMI Tracker</div>
+                  <div class="achievement-desc">Log BMI 5 times</div>
+                  <div class="achievement-progress">0/5 times</div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- TAB: Habits -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="tab-section" id="tab-habits">
+        <div class="section-header">
+          <h1 class="section-title">Habit Tracker</h1>
+          <button
+            class="hd-btn hd-btn-primary hd-btn-icon"
+            onclick="addNewHabit()"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New Habit
+          </button>
+        </div>
+
+        <div class="habits-grid" id="habitsGrid">
+          <div class="tab-placeholder">
+            <div class="placeholder-icon">🔥</div>
+            <div class="placeholder-title">Build Better Habits</div>
+            <div class="placeholder-sub">
+              Track daily habits and build streaks
+            </div>
+            <button class="hd-btn hd-btn-primary" onclick="addNewHabit()">
+              Create Your First Habit
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- TAB: Sleep -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="tab-section" id="tab-sleep">
+        <div class="section-header">
+          <h1 class="section-title">Sleep Tracker</h1>
+        </div>
+
+        <div class="sleep-grid">
+          <div class="tab-placeholder">
+            <div class="placeholder-icon">😴</div>
+            <div class="placeholder-title">Track Your Sleep</div>
+            <div class="placeholder-sub">
+              Monitor sleep quality and patterns
+            </div>
+            <button class="hd-btn hd-btn-primary">Coming Soon</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- TAB: Mood -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="tab-section" id="tab-mood">
+        <div class="section-header">
+          <h1 class="section-title">Mood Tracker</h1>
+        </div>
+
+        <div class="mood-grid">
+          <div class="tab-placeholder">
+            <div class="placeholder-icon">😊</div>
+            <div class="placeholder-title">Track Your Mood</div>
+            <div class="placeholder-sub">
+              Log daily emotions and find patterns
+            </div>
+            <button class="hd-btn hd-btn-primary">Coming Soon</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════════════ -->
+      <!-- TAB: Profile -->
+      <!-- ══════════════════════════════════════════ -->
+      <section class="tab-section" id="tab-profile">
+        <div class="section-header">
+          <h1 class="section-title">Profile & Settings</h1>
+        </div>
+
+        <div class="profile-grid">
+          <article class="card card-profile">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">👤</span>
+                <h2 class="card-title">User Profile</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="profile-avatar">
+                <div class="avatar-circle">
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <button class="hd-btn hd-btn-secondary">Change Avatar</button>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label">Full Name</label>
+                <input
+                  class="hd-input"
+                  type="text"
+                  id="userName"
+                  placeholder="Your name"
+                />
+              </div>
+
+              <div class="input-row">
+                <div class="input-group">
+                  <label class="input-label">Age</label>
+                  <input
+                    class="hd-input"
+                    type="number"
+                    id="userAge"
+                    placeholder="25"
+                  />
+                </div>
+                <div class="input-group">
+                  <label class="input-label">Gender</label>
+                  <select class="hd-input" id="userGender">
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="hd-btn hd-btn-primary hd-btn-block">
+                Save Profile
+              </button>
+            </div>
+          </article>
+
+          <article class="card card-settings">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-icon">⚙️</span>
+                <h2 class="card-title">App Settings</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="settings-list">
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Notifications</div>
+                    <div class="setting-desc">Enable push notifications</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notifToggle" checked />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Sound Effects</div>
+                    <div class="setting-desc">Play sounds on actions</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="soundToggle" checked />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+
+                <div class="setting-item">
+                  <div class="setting-info">
+                    <div class="setting-label">Auto Dark Mode</div>
+                    <div class="setting-desc">Follow system theme</div>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="autoThemeToggle" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="setting-buttons">
+                <button
+                  class="hd-btn hd-btn-secondary hd-btn-block"
+                  onclick="exportData()"
+                >
+                  Export All Data
+                </button>
+                <button
+                  class="hd-btn hd-btn-secondary hd-btn-block"
+                  onclick="importData()"
+                >
+                  Import Data
+                </button>
+                <button
+                  class="hd-btn hd-btn-danger hd-btn-block"
+                  onclick="resetAllData()"
+                >
+                  Reset All Data
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== BOTTOM NAVIGATION ===== -->
+    <nav class="bottom-nav" id="bottomNav">
+      <button
+        class="nav-item active"
+        data-tab="dashboard"
+        onclick="switchTab('dashboard', this)"
+      >
+        <span class="nav-icon">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+        </span>
+        <span class="nav-label">Dashboard</span>
+      </button>
+
+      <button
+        class="nav-item"
+        data-tab="habits"
+        onclick="switchTab('habits', this)"
+      >
+        <span class="nav-icon">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"
+            />
+          </svg>
+        </span>
+        <span class="nav-label">Habits</span>
+      </button>
+
+      <button
+        class="nav-item"
+        data-tab="sleep"
+        onclick="switchTab('sleep', this)"
+      >
+        <span class="nav-icon">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+          </svg>
+        </span>
+        <span class="nav-label">Sleep</span>
+      </button>
+
+      <button
+        class="nav-item"
+        data-tab="mood"
+        onclick="switchTab('mood', this)"
+      >
+        <span class="nav-icon">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+            <line
+              x1="9"
+              y1="9"
+              x2="9.01"
+              y2="9"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+            <line
+              x1="15"
+              y1="9"
+              x2="15.01"
+              y2="9"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+          </svg>
+        </span>
+        <span class="nav-label">Mood</span>
+      </button>
+
+      <button
+        class="nav-item"
+        data-tab="profile"
+        onclick="switchTab('profile', this)"
+      >
+        <span class="nav-icon">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </span>
+        <span class="nav-label">Profile</span>
+      </button>
+    </nav>
+
+    <!-- ===== MODALS ===== -->
+
+    <!-- Notification Panel -->
+    <div class="notification-panel" id="notificationPanel">
+      <div class="notification-panel-header">
+        <h3>Notifications</h3>
+        <button class="close-panel-btn" onclick="closeNotificationPanel()">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
       </div>
-    </article>
-
-
-  <!-- Steps Progress Card -->
-  <article class="card card-steps">
-    <h2 id="H1">Steps Today</h2>
-
-    <!-- Goal Input -->
-    <label for="stepGoal">Goal (steps):</label>
-    <input id="stepGoal" type="number" placeholder="Enter today's goal" />
-
-    <!-- Current Steps Input -->
-    <label for="currentSteps">Current Steps:</label>
-    <input id="currentSteps" type="number" placeholder="Enter steps walked so far" />
-
-    <!-- Progress Bar -->
-    <div class="progress" style="width: 100%; background: #eee; border-radius: 5px; overflow: hidden;">
-      <div class="progress-fill" 
-           id="stepsProgressFill">
-        <span id="stepsProgressText">0%</span>
+      <div class="notification-panel-body" id="notificationPanelBody">
+        <div class="notifications-empty">No new notifications</div>
       </div>
     </div>
 
-    <!-- Optional Tip -->
-    <p>💡 Tip: Regular walking keeps your body and mind healthy!</p>
-  </article>
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-panel-header">
+        <h3>Quick Settings</h3>
+        <button class="close-panel-btn" onclick="closeSettingsPanel()">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="settings-panel-body">
+        <div class="settings-list">
+          <div class="setting-item">
+            <div class="setting-info">
+              <div class="setting-label">Enable Notifications</div>
+            </div>
+            <label class="toggle-switch">
+              <input
+                type="checkbox"
+                id="enableNotifications"
+                onchange="toggleNotifications()"
+              />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <!--Reminder Card-->
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
 
+    <!-- PWA Install Prompt -->
+    <div class="pwa-install-prompt" id="pwaInstallPrompt" style="display: none">
+      <div class="pwa-prompt-content">
+        <svg class="pwa-icon" width="32" height="32" viewBox="0 0 32 32">
+          <defs>
+            <linearGradient id="pwaGrad" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0%" stop-color="#00D4AA" />
+              <stop offset="100%" stop-color="#00A3FF" />
+            </linearGradient>
+          </defs>
+          <rect
+            x="13"
+            y="2"
+            width="6"
+            height="28"
+            rx="3"
+            fill="url(#pwaGrad)"
+          />
+          <rect
+            x="2"
+            y="13"
+            width="28"
+            height="6"
+            rx="3"
+            fill="url(#pwaGrad)"
+          />
+        </svg>
+        <div class="pwa-text">
+          <div class="pwa-title">Install HealthDash Pro</div>
+          <div class="pwa-desc">Add to home screen for quick access</div>
+        </div>
+      </div>
+      <div class="pwa-actions">
+        <button class="hd-btn hd-btn-primary" id="pwaInstallBtn">
+          Install
+        </button>
+        <button class="hd-btn hd-btn-ghost" id="pwaDismissBtn">Not Now</button>
+      </div>
+    </div>
 
-  <article class="card card-reminder">
-<h2 id="H1">Daily Reminder</h2>
-<label for="reminderTitle">Reminder Title:</label>
-    <input id="reminderTitle" type="text" placeholder="Enter reminder title" />
-
-    <!-- Reminder Time -->
-    <label for="reminderTime">Time:</label>
-    <input id="reminderTime" type="time" /><br><br>
-
-    <!-- Reminder Note -->
-    <label for="reminderNote">Note:</label>
-    <textarea id="reminderNote" placeholder="Write a short note..."></textarea>
-
-    <!-- Buttons -->
-    <button type="button" onclick="saveReminder()">Save Reminder</button>
-    <button type="button" onclick="clearReminder()">Clear</button>
-
-    <!-- Optional Tip -->
-    <p>💡 Tip: Set small reminders to stay organized every day!</p>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-
-
-</article>
-
-<!--Footer-->
-
- 
-  <!-- Footer Section -->
-  <footer>
-  <p>&copy; 2025 MyWebsite. All Rights Reserved.</p>
-  <p>
-    <a href="#"><i class="fa-solid fa-circle-info"></i>About</a> |
-    <a href="#"><i class="fa-solid fa-envelope"></i>Contact</a> |
-    <a href="#"><i class="fa-solid fa-lock"></i>Privacy Policy</a>
-  </p>
-  <p>
-    Follow us:
-    <a href="#"><i class="fa-brands fa-facebook"></i>Facebook</a> |
-    <a href="#"><i class="fa-brands fa-instagram"></i>Instagram</a> |
-    <a href="#"><i class="fa-brands fa-twitter"></i>Twitter</a>
-  </p>
-</footer>
-
-<!-- Add this in <head> -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-
-</section>
-
-
-
-
-    <script src="./app.js"></script>
-</body>
+    <!-- Scripts -->
+    <script src="app.js"></script>
+  </body>
 </html>
